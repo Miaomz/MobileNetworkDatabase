@@ -1,6 +1,6 @@
 package org.casual.dao.usage;
 
-import org.casual.dao.datautil.Templar;
+import org.casual.dao.util.Templar;
 import org.casual.entity.CallUsage;
 import org.casual.entity.DomesticTraffic;
 import org.casual.entity.LocalTraffic;

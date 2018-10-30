@@ -1,6 +1,6 @@
 package org.casual.dao.user;
 
-import org.casual.dao.datautil.Templar;
+import org.casual.dao.util.Templar;
 import org.casual.entity.User;
 import org.casual.util.ResultMessage;
 

@@ -1,6 +1,6 @@
 package org.casual.dao.pack;
 
-import org.casual.dao.datautil.Templar;
+import org.casual.dao.util.Templar;
 import org.casual.entity.Pack;
 import org.casual.entity.PackOffer;
 import org.casual.util.ResultMessage;

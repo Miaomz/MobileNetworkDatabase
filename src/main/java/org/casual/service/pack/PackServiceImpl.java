@@ -1,7 +1,7 @@
 package org.casual.service.pack;
 
-import org.casual.dao.datautil.DaoFactory;
 import org.casual.dao.pack.PackDAO;
+import org.casual.dao.util.DaoFactory;
 import org.casual.entity.Pack;
 import org.casual.entity.PackOffer;
 import org.casual.util.ResultMessage;

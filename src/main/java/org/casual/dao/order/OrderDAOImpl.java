@@ -1,6 +1,6 @@
 package org.casual.dao.order;
 
-import org.casual.dao.datautil.Templar;
+import org.casual.dao.util.Templar;
 import org.casual.entity.Order;
 import org.casual.util.ResultMessage;
 
@@ -24,7 +24,8 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public ResultMessage updateOrder(Order order) {
-        return Templar.update("UPDATE USER_ORDER SET uid = ?, pid = ?, month = ?, renewing = ? WHERE orderId = ?", order.getUid(), order.getPid(), order.getMonth(), order.isRenewing(), order.getOrderId());
+        return Templar.update("UPDATE USER_ORDER SET uid = ?, pid = ?, month = ?, renewing = ? WHERE orderId = ?",
+                order.getUid(), order.getPid(), order.getMonth(), order.isRenewing(), order.getOrderId());
     }
 
     @Override
@@ -36,5 +37,11 @@ public class OrderDAOImpl implements OrderDAO {
     @SuppressWarnings("unchecked")
     public List<Order> getOrderList() {
         return Templar.getList("SELECT * FROM USER_ORDER", Order.class);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<Order> getOrderByUser(long uid) {
+        return Templar.getList("SELECT * FROM USER_ORDER WHERE uid = ?", Order.class, uid);
     }
 }

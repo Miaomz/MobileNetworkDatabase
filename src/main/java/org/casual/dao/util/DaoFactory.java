@@ -1,4 +1,4 @@
-package org.casual.dao.datautil;
+package org.casual.dao.util;
 
 import lombok.Getter;
 import org.casual.dao.order.OrderDAO;

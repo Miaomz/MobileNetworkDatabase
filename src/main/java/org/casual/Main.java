@@ -1,6 +1,6 @@
 package org.casual;
 
-import org.casual.dao.datautil.DBConnection;
+import org.casual.dao.util.DBConnection;
 import org.casual.entity.Order;
 import org.casual.service.order.OrderService;
 import org.casual.service.usage.UsageService;

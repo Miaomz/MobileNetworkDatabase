@@ -1,7 +1,7 @@
 package org.casual.service.order;
 
-import org.casual.dao.datautil.DaoFactory;
 import org.casual.dao.order.OrderDAO;
+import org.casual.dao.util.DaoFactory;
 import org.casual.entity.*;
 import org.casual.service.pack.PackService;
 import org.casual.service.usage.UsageService;
@@ -43,9 +43,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public List<Order> queryOrders(long uid) {
-        List<Order> orders = orderDAO.getOrderList();
-        orders.removeIf(order -> order.getUid() != uid);
-        return orders;
+        return orderDAO.getOrderByUser(uid);
     }
 
     @Override
@@ -93,8 +91,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public ResultMessage cancelOrderImmediately(long uid, long pid) {
-        List<Order> orders = orderDAO.getOrderList();
-        orders.removeIf(order -> order.getUid()!=uid || order.getPid()!=pid || !isSameMonth(order.getMonth(), LocalDate.now()));
+        List<Order> orders = orderDAO.getOrderByUser(uid);
+        orders.removeIf(order -> order.getPid()!=pid || !isSameMonth(order.getMonth(), LocalDate.now()));
         if (orders.isEmpty()){
             return ResultMessage.FAILURE;
         }
@@ -102,23 +100,6 @@ public class OrderServiceImpl implements OrderService {
         ResultMessage message = ResultMessage.SUCCESS;
         for (Order order : orders) {
             if (cancelOrderImmediately(order.getOrderId()) == ResultMessage.FAILURE){
-                message = ResultMessage.FAILURE;
-            }
-        }
-        return message;
-    }
-
-    @Override
-    public ResultMessage cancelOrderNextMonth(long uid, long pid) {
-        List<Order> orders = orderDAO.getOrderList();
-        orders.removeIf(order -> order.getUid()!=uid || order.getPid()!=pid || !isSameMonth(order.getMonth(), LocalDate.now()));
-        if (orders.isEmpty()){
-            return ResultMessage.FAILURE;
-        }
-
-        ResultMessage message = ResultMessage.SUCCESS;
-        for (Order order : orders) {
-            if (cancelOrderNextMonth(order.getOrderId()) == ResultMessage.FAILURE){
                 message = ResultMessage.FAILURE;
             }
         }
@@ -134,6 +115,23 @@ public class OrderServiceImpl implements OrderService {
 
         order.setRenewing(false);
         return orderDAO.updateOrder(order);
+    }
+
+    @Override
+    public ResultMessage cancelOrderNextMonth(long uid, long pid) {
+        List<Order> orders = orderDAO.getOrderByUser(uid);
+        orders.removeIf(order -> order.getPid()!=pid || !isSameMonth(order.getMonth(), LocalDate.now()));
+        if (orders.isEmpty()){
+            return ResultMessage.FAILURE;
+        }
+
+        ResultMessage message = ResultMessage.SUCCESS;
+        for (Order order : orders) {
+            if (cancelOrderNextMonth(order.getOrderId()) == ResultMessage.FAILURE){
+                message = ResultMessage.FAILURE;
+            }
+        }
+        return message;
     }
 
     @Override
@@ -153,8 +151,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Double getFreeQuantity(long uid, UsageType type, LocalDate date) {
-        List<Order> orders = orderDAO.getOrderList();
-        orders.removeIf(order -> order.getUid() != uid || !isSameMonth(date, order.getMonth()));
+        List<Order> orders = orderDAO.getOrderByUser(uid);
+        orders.removeIf(order -> !isSameMonth(date, order.getMonth()));
 
         List<PackOffer> offers = new LinkedList<>();
         for (Order order : orders) {

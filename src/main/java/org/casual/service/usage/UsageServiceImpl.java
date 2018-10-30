@@ -1,7 +1,7 @@
 package org.casual.service.usage;
 
-import org.casual.dao.datautil.DaoFactory;
 import org.casual.dao.usage.UsageDAO;
+import org.casual.dao.util.DaoFactory;
 import org.casual.entity.*;
 import org.casual.service.order.OrderService;
 import org.casual.service.pack.PackService;
