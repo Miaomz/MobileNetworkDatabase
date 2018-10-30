@@ -2,11 +2,14 @@ package org.casual;
 
 import org.casual.dao.util.DBConnection;
 import org.casual.entity.Order;
+import org.casual.entity.PackOffer;
 import org.casual.entity.User;
 import org.casual.service.order.OrderService;
+import org.casual.service.pack.PackService;
 import org.casual.service.usage.UsageService;
 import org.casual.service.user.UserService;
 import org.casual.service.util.ServiceFactory;
+import org.casual.util.UsageType;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,6 +29,7 @@ public class Main {
     private OrderService orderService = ServiceFactory.getInstance().getOrderService();
     private UsageService usageService = ServiceFactory.getInstance().getUsageService();
     private UserService userService = ServiceFactory.getInstance().getUserService();
+    private PackService packService = ServiceFactory.getInstance().getPackService();
 
     public static void main(String[] args) {
         try {
@@ -39,42 +43,50 @@ public class Main {
             }
             timeCost = System.currentTimeMillis() - timeCost;
             System.out.println("用时" + timeCost + "毫秒");
+            System.out.println();
 
             System.out.println("1号用户订购5号套餐");
             timeCost = System.currentTimeMillis();
             System.out.println(main.orderService.makeOrder(1, 5));
             timeCost = System.currentTimeMillis() - timeCost;
             System.out.println("用时" + timeCost + "毫秒");
+            System.out.println();
 
             System.out.println("1号用户取消订购5号套餐");
             timeCost = System.currentTimeMillis();
             System.out.println(main.orderService.cancelOrderImmediately(1, 5));
             System.out.println("用时" + (System.currentTimeMillis()-timeCost) + "毫秒");
+            System.out.println();
 
             System.out.println("1号用户隔月取消订购1号套餐");
             timeCost = System.currentTimeMillis();
             System.out.println(main.orderService.cancelOrderNextMonth(1, 1));
             System.out.println("用时" + (System.currentTimeMillis()-timeCost) + "毫秒");
+            System.out.println();
 
             System.out.println("用户1通话13分钟");
             timeCost = System.currentTimeMillis();
             main.usageService.addCallUsage(1, 13);
             System.out.println("用时" + (System.currentTimeMillis()-timeCost) + "毫秒");
+            System.out.println();
 
             System.out.println("用户1使用当地流量100M");
             timeCost = System.currentTimeMillis();
             main.usageService.addLocalTraffic(1, 100);
             System.out.println("用时" + (System.currentTimeMillis()-timeCost) + "毫秒");
+            System.out.println();
 
             System.out.println("用户1查询本月账单");
             timeCost = System.currentTimeMillis();
             System.out.println(main.usageService.getMonthlyBill(1, LocalDate.now()));
             System.out.println("用时" + (System.currentTimeMillis()-timeCost) + "毫秒");
+            System.out.println();
 
             System.out.println("订单续订（此操作原本仅应该在月初进行）");
             timeCost = System.currentTimeMillis();
             System.out.println(main.orderService.renewOrder());
             System.out.println("用时" + (System.currentTimeMillis()-timeCost) + "毫秒");
+            System.out.println();
 
             System.out.println("冻结欠费用户（此操作原本仅应该在月初进行）");
             timeCost = System.currentTimeMillis();
@@ -82,6 +94,23 @@ public class Main {
                 System.out.println(toJson(user));
             }
             System.out.println("用时" + (System.currentTimeMillis()-timeCost) + "毫秒");
+            System.out.println();
+
+            System.out.println("查看5号套餐的优惠方案");
+            timeCost = System.currentTimeMillis();
+            for (PackOffer packOffer : main.packService.getPackOfferByPack(main.packService.getPack(5))) {
+                System.out.println(toJson(packOffer));
+            }
+            System.out.println("用时" + (System.currentTimeMillis()-timeCost) + "毫秒");
+            System.out.println();
+
+            System.out.println("5号用户查看本月免费额度");
+            timeCost = System.currentTimeMillis();
+            for (UsageType usageType : UsageType.values()) {
+                System.out.println(usageType + ": " + main.orderService.getFreeQuantity(5, usageType, LocalDate.now()));
+            }
+            System.out.println("用时" + (System.currentTimeMillis()-timeCost) + "毫秒");
+            System.out.println();
 
         } catch (SQLException|ClassNotFoundException e){
             e.printStackTrace();
