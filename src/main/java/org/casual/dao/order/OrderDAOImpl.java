@@ -24,7 +24,7 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public ResultMessage updateOrder(Order order) {
-        return Templar.update("UPDATE USER_ORDER SET uid = ?, pid = ?, month = ?, renewing = ?", order.getUid(), order.getPid(), order.getMonth(), order.isRenewing());
+        return Templar.update("UPDATE USER_ORDER SET uid = ?, pid = ?, month = ?, renewing = ? WHERE orderId = ?", order.getUid(), order.getPid(), order.getMonth(), order.isRenewing(), order.getOrderId());
     }
 
     @Override

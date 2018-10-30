@@ -36,6 +36,7 @@ public class ServiceFactory {
         UsageServiceImpl usageImpl = (UsageServiceImpl)usageService;
         usageImpl.setOrderService(orderService);
         usageImpl.setUserService(userService);
+        usageImpl.setPackService(packService);
     }
 
     public static ServiceFactory getInstance(){

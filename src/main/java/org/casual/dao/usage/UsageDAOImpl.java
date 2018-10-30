@@ -9,8 +9,9 @@ import org.casual.util.ResultMessage;
 import org.casual.vo.DoubleWrapper;
 import org.casual.vo.IntegerWrapper;
 
-import java.time.LocalDateTime;
 import java.util.List;
+
+import static org.casual.util.DateTimeUtil.getStartOfCurrentMonth;
 
 /**
  * @author miaomuzhi
@@ -124,9 +125,5 @@ public class UsageDAOImpl implements UsageDAO {
         } else {
             return 0.0;
         }
-    }
-
-    private LocalDateTime getStartOfCurrentMonth(){
-        return LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
     }
 }

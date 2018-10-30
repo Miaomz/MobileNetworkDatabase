@@ -2,18 +2,20 @@ package org.casual.service.order;
 
 import org.casual.dao.datautil.DaoFactory;
 import org.casual.dao.order.OrderDAO;
-import org.casual.entity.Order;
-import org.casual.entity.PackOffer;
+import org.casual.entity.*;
 import org.casual.service.pack.PackService;
 import org.casual.service.usage.UsageService;
 import org.casual.service.user.UserService;
-import org.casual.util.JsonUtil;
 import org.casual.util.ResultMessage;
 import org.casual.util.UsageType;
+import org.casual.vo.MonthlyBill;
 
 import java.time.LocalDate;
 import java.util.LinkedList;
 import java.util.List;
+
+import static java.lang.Math.min;
+import static org.casual.util.DateTimeUtil.isSameMonth;
 
 /**
  * @author miaomuzhi
@@ -43,8 +45,6 @@ public class OrderServiceImpl implements OrderService {
     public List<Order> queryOrders(long uid) {
         List<Order> orders = orderDAO.getOrderList();
         orders.removeIf(order -> order.getUid() != uid);
-
-        orders.forEach(order -> System.out.println(JsonUtil.toJson(order)));//presentation
         return orders;
     }
 
@@ -60,9 +60,67 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ResultMessage cancelOrderImmediately(long orderId) {
         Order order = orderDAO.getOrder(orderId);
+        if (order == null){
+            return ResultMessage.FAILURE;
+        }
+
         ResultMessage message = orderDAO.deleteOrder(orderId);
         if (message == ResultMessage.SUCCESS){
+            MonthlyBill monthlyBill = usageService.getMonthlyBill(orderId, LocalDate.now());
+            List<PackOffer> offers = packService.getPackOfferByPack(packService.getPack(order.getPid()));
+            double call = 0;
+            double mes = 0;
+            double local = 0;
+            double domestic = 0;
+            for (PackOffer offer : offers) {
+                switch (UsageType.values()[offer.getOfferType()]){
+                    case CALL_USAGE:call+=offer.getQuantity();break;
+                    case MES_USAGE:mes+=offer.getQuantity();break;
+                    case LOCAL_TRAFFIC:local+=offer.getQuantity();break;
+                    case DOMESTIC_TRAFFIC:domestic+=offer.getQuantity();break;
+                }
+            }
+            double extraCost = min(call, monthlyBill.getCallSum()) * CallUsage.getPrice()
+                    + min(mes, monthlyBill.getMesSum()) * MesUsage.getPrice()
+                    + min(local, monthlyBill.getLocalTraffic()) * LocalTraffic.getPrice()
+                    + min(domestic, monthlyBill.getDomesticTraffic()) * DomesticTraffic.getPrice();
+            userService.spendMoney(order.getUid(), extraCost);
+
             userService.refundMoney(order.getUid(), packService.getPack(order.getPid()).getFee());
+        }
+        return message;
+    }
+
+    @Override
+    public ResultMessage cancelOrderImmediately(long uid, long pid) {
+        List<Order> orders = orderDAO.getOrderList();
+        orders.removeIf(order -> order.getUid()!=uid || order.getPid()!=pid || !isSameMonth(order.getMonth(), LocalDate.now()));
+        if (orders.isEmpty()){
+            return ResultMessage.FAILURE;
+        }
+
+        ResultMessage message = ResultMessage.SUCCESS;
+        for (Order order : orders) {
+            if (cancelOrderImmediately(order.getOrderId()) == ResultMessage.FAILURE){
+                message = ResultMessage.FAILURE;
+            }
+        }
+        return message;
+    }
+
+    @Override
+    public ResultMessage cancelOrderNextMonth(long uid, long pid) {
+        List<Order> orders = orderDAO.getOrderList();
+        orders.removeIf(order -> order.getUid()!=uid || order.getPid()!=pid || !isSameMonth(order.getMonth(), LocalDate.now()));
+        if (orders.isEmpty()){
+            return ResultMessage.FAILURE;
+        }
+
+        ResultMessage message = ResultMessage.SUCCESS;
+        for (Order order : orders) {
+            if (cancelOrderNextMonth(order.getOrderId()) == ResultMessage.FAILURE){
+                message = ResultMessage.FAILURE;
+            }
         }
         return message;
     }
@@ -70,6 +128,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public ResultMessage cancelOrderNextMonth(long orderId) {
         Order order = orderDAO.getOrder(orderId);
+        if (order == null){
+            return ResultMessage.FAILURE;
+        }
+
         order.setRenewing(false);
         return orderDAO.updateOrder(order);
     }
@@ -108,15 +170,5 @@ public class OrderServiceImpl implements OrderService {
             sum += offer.getQuantity();
         }
         return sum;
-    }
-
-    /**
-     * check if two local dates have the same year and month values
-     * @param date1 local date
-     * @param date2 local date
-     * @return is the same month
-     */
-    private boolean isSameMonth(LocalDate date1, LocalDate date2){
-        return date1.getYear() == date2.getYear() && date1.getMonthValue() == date2.getMonthValue();
     }
 }

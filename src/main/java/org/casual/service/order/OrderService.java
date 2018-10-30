@@ -36,11 +36,27 @@ public interface OrderService {
     ResultMessage cancelOrderImmediately(long orderId);
 
     /**
+     * cancel order immediately, and return failure if this order doesn't exist
+     * @param uid user id
+     * @param pid pack id
+     * @return result message
+     */
+    ResultMessage cancelOrderImmediately(long uid, long pid);
+
+    /**
      * let system not renew the pack automatically
      * @param orderId order id
      * @return result message
      */
     ResultMessage cancelOrderNextMonth(long orderId);
+
+    /**
+     * cancel order next month, and return failure if this order doesn't exist
+     * @param uid user id
+     * @param pid pack id
+     * @return result message
+     */
+    ResultMessage cancelOrderNextMonth(long uid, long pid);
 
     /**
      * make all orders which is still renewing renewed

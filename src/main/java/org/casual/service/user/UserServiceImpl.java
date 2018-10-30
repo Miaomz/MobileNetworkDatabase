@@ -43,6 +43,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResultMessage spendMoney(long uid, double money) {
         User user = getUser(uid);
+        if (user == null){
+            return ResultMessage.FAILURE;
+        }
+
         user.setBalance(user.getBalance() - money);
         return updateUser(user);
     }

@@ -4,6 +4,7 @@ import org.casual.util.ResultMessage;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,7 +25,6 @@ public class Templar {
             statement.executeUpdate();
             return ResultMessage.SUCCESS;
         } catch (SQLException e){
-            e.printStackTrace();
             return ResultMessage.FAILURE;
         }
     }
@@ -55,7 +55,6 @@ public class Templar {
                 return fetchValue(set, type);
             }
         } catch (SQLException e){
-            e.printStackTrace();
             return new ArrayList<>();
         } catch (IllegalAccessException|InvocationTargetException|NoSuchMethodException|InstantiationException e){
             e.printStackTrace();
@@ -87,12 +86,13 @@ public class Templar {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static List fetchValue(ResultSet set, Class type) throws SQLException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, InstantiationException{
         List<Method> setters = new ArrayList<>(type.getMethods().length);
         for (Method method : type.getMethods()) {
             setters.add(method);
         }
-        setters.removeIf(method -> !method.getName().startsWith("set") || method.getParameterTypes().length!=1);
+        setters.removeIf(method -> !method.getName().startsWith("set") || method.getParameterTypes().length!=1 || Modifier.isStatic(method.getModifiers()));
         List<Object> result = new ArrayList<>();
 
         while (set.next()){
