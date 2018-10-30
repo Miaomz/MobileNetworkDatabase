@@ -115,18 +115,19 @@ public class UsageServiceImpl implements UsageService {
         double localQuota = 0;
         double domeQuota = 0;
         for (PackOffer offer : offers) {
+            double quantity = offer.getQuantity();
             switch (UsageType.values()[offer.getOfferType()]){
                 case CALL_USAGE:
-                    callQuota += offer.getQuantity();
+                    callQuota += quantity;
                     break;
                 case MES_USAGE:
-                    mesQuota += offer.getQuantity();
+                    mesQuota += quantity;
                     break;
                 case LOCAL_TRAFFIC:
-                    localQuota += offer.getQuantity();
+                    localQuota += quantity;
                     break;
                 case DOMESTIC_TRAFFIC:
-                    domeQuota += offer.getQuantity();
+                    domeQuota += quantity;
                     break;
             }
         }
