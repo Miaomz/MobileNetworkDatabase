@@ -37,7 +37,7 @@ public class OrderDAOImplTest {
 
     @Test
     public void updateOrder() {
-        orderDAO.updateOrder(new Order(0, 1, 2, LocalDate.now(), true));
+        orderDAO.updateOrder(new Order(0, 1, 3, LocalDate.now(), true));
     }
 
     @Test

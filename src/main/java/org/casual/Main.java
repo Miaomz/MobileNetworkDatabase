@@ -1,6 +1,8 @@
 package org.casual;
 
 import org.casual.dao.datautil.DBConnection;
+import org.casual.service.order.OrderService;
+import org.casual.service.util.ServiceFactory;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,9 +16,14 @@ import java.sql.*;
  */
 public class Main {
 
+    private OrderService orderService = ServiceFactory.getInstance().getOrderService();
+
     public static void main(String[] args) {
         try {
-            new Main().linkToDB();
+            Main main = new Main();
+            main.linkToDB();
+
+            main.orderService.queryOrders(1);
         } catch (SQLException|ClassNotFoundException e){
             e.printStackTrace();
         }

@@ -33,7 +33,7 @@ public class Templar {
         try (PreparedStatement statement = DBConnection.getInstance().getConnection().prepareStatement(sql)){
             inject(statement, args);
             try (ResultSet set = statement.executeQuery()){
-                List list = getList(set, type);
+                List list = fetchValue(set, type);
                 if (list.isEmpty()){
                     return null;
                 } else {
@@ -52,7 +52,7 @@ public class Templar {
         try (PreparedStatement statement = DBConnection.getInstance().getConnection().prepareStatement(sql)){
             inject(statement, args);
             try (ResultSet set = statement.executeQuery()){
-                return getList(set, type);
+                return fetchValue(set, type);
             }
         } catch (SQLException e){
             e.printStackTrace();
@@ -87,7 +87,7 @@ public class Templar {
         }
     }
 
-    private static List getList(ResultSet set, Class type) throws SQLException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, InstantiationException{
+    private static List fetchValue(ResultSet set, Class type) throws SQLException, IllegalAccessException, InvocationTargetException, NoSuchMethodException, InstantiationException{
         List<Method> setters = new ArrayList<>(type.getMethods().length);
         for (Method method : type.getMethods()) {
             setters.add(method);

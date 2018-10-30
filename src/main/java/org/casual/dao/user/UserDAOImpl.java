@@ -14,7 +14,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public ResultMessage addUser(User user) {
-        return Templar.update("INSERT INTO USER(uname, balance) VALUES(?, ?)", user.getUname(), user.getBalance());
+        return Templar.update("INSERT INTO USER(uname, balance, frozen) VALUES(?, ?, ?)", user.getUname(), user.getBalance(), user.isFrozen());
     }
 
     @Override
@@ -24,7 +24,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public ResultMessage updateUser(User user) {
-        return Templar.update("UPDATE USER SET uname = ?, balance = ? WHERE uid = ?", user.getUname(), user.getBalance(), user.getUid());
+        return Templar.update("UPDATE USER SET uname = ?, balance = ?, frozen = ? WHERE uid = ?", user.getUname(), user.getBalance(), user.isFrozen(), user.getUid());
     }
 
     @Override

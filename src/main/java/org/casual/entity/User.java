@@ -18,4 +18,9 @@ public class User {
     private String uname;
 
     private double balance;
+
+    /**
+     * the user will be frozen if he/she has debt
+     */
+    private boolean frozen;
 }

@@ -37,4 +37,12 @@ public interface UsageDAO {
     List<LocalTraffic> getLocalTrafficList();
 
     List<DomesticTraffic> getDomesticTrafficList();
+
+    Double currentCallUsage(long uid);
+
+    Integer currentMesUsage(long uid);
+
+    Double currentLocalTraffic(long uid);
+
+    Double currentDomesticTraffic(long uid);
 }

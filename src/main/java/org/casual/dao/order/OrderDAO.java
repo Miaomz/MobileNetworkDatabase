@@ -17,7 +17,7 @@ public interface OrderDAO {
 
     ResultMessage updateOrder(Order order);
 
-    Order getOrder(long uid);
+    Order getOrder(long orderId);
 
     List<Order> getOrderList();
 }

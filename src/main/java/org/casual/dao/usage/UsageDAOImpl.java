@@ -6,7 +6,10 @@ import org.casual.entity.DomesticTraffic;
 import org.casual.entity.LocalTraffic;
 import org.casual.entity.MesUsage;
 import org.casual.util.ResultMessage;
+import org.casual.vo.DoubleWrapper;
+import org.casual.vo.IntegerWrapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -77,5 +80,53 @@ public class UsageDAOImpl implements UsageDAO {
     @Override
     public List<DomesticTraffic> getDomesticTrafficList() {
         return Templar.getList("SELECT * FROM DOMESTIC_TRAFFIC", DomesticTraffic.class);
+    }
+
+    @Override
+    public Double currentCallUsage(long uid) {
+        Object sum;
+        if ((sum = Templar.getOne("SELECT SUM(callTime) as VAL FROM CALL_USAGE WHERE uid = ? and finishDatetime > ?",
+                DoubleWrapper.class, uid, getStartOfCurrentMonth())) != null){
+            return ((DoubleWrapper)sum).getVal();
+        } else {
+            return 0.0;
+        }
+    }
+
+    @Override
+    public Integer currentMesUsage(long uid) {
+        Object sum;
+        if ((sum = Templar.getOne("SELECT COUNT(*) as VAL FROM MES_USAGE WHERE uid = ? and finishDatetime > ?",
+                IntegerWrapper.class, uid, getStartOfCurrentMonth())) != null){
+            return ((IntegerWrapper)sum).getVal();
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public Double currentLocalTraffic(long uid) {
+        Object sum;
+        if ((sum = Templar.getOne("SELECT SUM(traffic) as VAL FROM LOCAL_TRAFFIC WHERE uid = ? and finishDatetime > ?",
+                DoubleWrapper.class, uid, getStartOfCurrentMonth())) != null){
+            return ((DoubleWrapper)sum).getVal();
+        } else {
+            return 0.0;
+        }
+    }
+
+    @Override
+    public Double currentDomesticTraffic(long uid) {
+        Object sum;
+        if ((sum = Templar.getOne("SELECT SUM(traffic) as VAL FROM DOMESTIC_TRAFFIC WHERE uid = ? and finishDatetime > ?",
+                DoubleWrapper.class, uid, getStartOfCurrentMonth())) != null){
+            return ((DoubleWrapper)sum).getVal();
+        } else {
+            return 0.0;
+        }
+    }
+
+    private LocalDateTime getStartOfCurrentMonth(){
+        return LocalDateTime.now().withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0);
     }
 }

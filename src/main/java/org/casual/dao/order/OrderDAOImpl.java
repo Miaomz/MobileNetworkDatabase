@@ -28,8 +28,8 @@ public class OrderDAOImpl implements OrderDAO {
     }
 
     @Override
-    public Order getOrder(long uid) {
-        return (Order) Templar.getOne("SELECT * FROM USER_ORDER WHERE orderId = ?", Order.class, uid);
+    public Order getOrder(long orderId) {
+        return (Order) Templar.getOne("SELECT * FROM USER_ORDER WHERE orderId = ?", Order.class, orderId);
     }
 
     @Override

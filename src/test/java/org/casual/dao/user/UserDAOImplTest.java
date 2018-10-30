@@ -21,7 +21,7 @@ public class UserDAOImplTest {
 
     @Test
     public void addUser() {
-        userDAO.addUser(new User(0, "second", 1200));
+        userDAO.addUser(new User(0, "second", 1200, false));
     }
 
     @Test
@@ -31,7 +31,7 @@ public class UserDAOImplTest {
 
     @Test
     public void updateUser() {
-        userDAO.updateUser(new User(1, "first", 900));
+        userDAO.updateUser(new User(1, "first", 900, false));
     }
 
     @Test
